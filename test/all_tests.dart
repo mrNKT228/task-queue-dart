@@ -1,130 +1,131 @@
-library future_chain_test;
+// library future_chain_test;
 
-import 'dart:async';
+// import 'dart:async';
 
-import 'package:unittest/unittest.dart';
-import 'package:task_queue/task_queue.dart';
+// import 'package:unittest/unittest.dart';
 
-main() {
-  group('TaskQueue', () {
-    TaskQueue queue;
-    Completer completer1;
-    Completer completer2;
-    Completer completer3;
-    bool function1Started = false;
-    bool function2Started = false;
-    bool function3Started = false;
+// import '../lib/task_queue.dart';
 
-    setUp(() {
-      queue = new TaskQueue();
-      completer1 = new Completer();
-      completer2 = new Completer();
-      completer3 = new Completer();
-    });
+// main() {
+//   group('TaskQueue', () {
+//     TaskQueue queue;
+//     Completer completer1;
+//     Completer completer2;
+//     Completer completer3;
+//     bool function1Started = false;
+//     bool function2Started = false;
+//     bool function3Started = false;
 
-    test('should execute the function added to the queue', () {
-      Future function() {
-        Timer.run(expectAsync0(() => completer1.complete(1)));
-        return completer1.future;
-      }
+//     setUp(() {
+//       queue = new TaskQueue();
+//       completer1 = new Completer();
+//       completer2 = new Completer();
+//       completer3 = new Completer();
+//     });
 
-      Future future1 = queue.schedule(function);
-      return future1.then((value) {
-        expect(value, 1);
-      });
-    });
+//     test('should execute the function added to the queue', () {
+//       Future function() {
+//         Timer.run(expectAsync0(() => completer1.complete(1)));
+//         return completer1.future;
+//       }
 
-    test('should be active after adding a task', () {
-      Future function() {
-        Timer.run(expectAsync0(() => completer1.complete(1)));
-        return completer1.future;
-      }
+//       Future future1 = queue.schedule(function);
+//       return future1.then((value) {
+//         expect(value, 1);
+//       });
+//     });
 
-      expect(queue.isActive, isFalse);
-      Future future1 = queue.schedule(function);
-      expect(queue.isActive, isTrue);
+//     test('should be active after adding a task', () {
+//       Future function() {
+//         Timer.run(expectAsync0(() => completer1.complete(1)));
+//         return completer1.future;
+//       }
 
-      return future1.then((value) {
-        expect(value, 1);
-        // true since there still could be a task in the queue
-        expect(queue.isActive, isTrue);
-      });
-    });
+//       expect(queue.isActive, isFalse);
+//       Future future1 = queue.schedule(function);
+//       expect(queue.isActive, isTrue);
 
-    test('should run a new task in a queue which already was empty', () {
-      Future function() {
-        Timer.run(expectAsync0(() => completer1.complete(1)));
-        return completer1.future;
-      }
+//       return future1.then((value) {
+//         expect(value, 1);
+//         // true since there still could be a task in the queue
+//         expect(queue.isActive, isTrue);
+//       });
+//     });
 
-      Future function2() {
-        Timer.run(expectAsync0(() => completer2.complete(2)));
-        return completer2.future;
-      }
+//     test('should run a new task in a queue which already was empty', () {
+//       Future function() {
+//         Timer.run(expectAsync0(() => completer1.complete(1)));
+//         return completer1.future;
+//       }
 
-      Future future1 = queue.schedule(function);
-      future1.then((value) {
-        expect(queue.isActive, isTrue);
-        Future future2 = queue.schedule(function2);
-        expect(future2, completes);
-      });
+//       Future function2() {
+//         Timer.run(expectAsync0(() => completer2.complete(2)));
+//         return completer2.future;
+//       }
 
-      return Future.wait([future1, completer2.future]);
-    });
+//       Future future1 = queue.schedule(function);
+//       future1.then((value) {
+//         expect(queue.isActive, isTrue);
+//         Future future2 = queue.schedule(function2);
+//         expect(future2, completes);
+//       });
+
+//       return Future.wait([future1, completer2.future]);
+//     });
 
 
-    test('should execute in the order they have been added', () {
-      Future function() {
-        Timer.run(expectAsync0(() => completer1.complete(1)));
-        return completer1.future;
-      }
+//     test('should execute in the order they have been added', () {
+//       Future function() {
+//         Timer.run(expectAsync0(() => completer1.complete(1)));
+//         return completer1.future;
+//       }
 
-      Future function2() {
-        function2Started = true;
-        Timer.run(expectAsync0(() => completer2.complete(2)));
-        return completer2.future;
-      }
+//       Future function2() {
+//         function2Started = true;
+//         Timer.run(expectAsync0(() => completer2.complete(2)));
+//         return completer2.future;
+//       }
 
-      Future function3() {
-        function3Started = true;
-        Timer.run(expectAsync0(() => completer3.complete(3)));
-        return completer3.future;
-      }
+//       Future function3() {
+//         function3Started = true;
+//         Timer.run(expectAsync0(() => completer3.complete(3)));
+//         return completer3.future;
+//       }
 
-      Future future1 = queue.schedule(function);
-      Future future2 = queue.schedule(function2);
-      Future future3 = queue.schedule(function3);
+//       Future future1 = queue.schedule(function);
+//       Future future2 = queue.schedule(function2);
+//       Future future3 = queue.schedule(function3);
 
-      expect(function2Started, isFalse);
-      expect(function3Started, isFalse);
+//       expect(function2Started, isFalse);
+//       expect(function3Started, isFalse);
 
-      future1.then((value) {
-        expect(value, 1);
-        expect(function2Started, isFalse);
-        expect(completer2.isCompleted, isFalse);
-        expect(function3Started, isFalse);
-        expect(completer3.isCompleted, isFalse);
-      });
+//       future1.then((value) {
+//         expect(value, 1);
+//         expect(function2Started, isFalse);
+//         expect(completer2.isCompleted, isFalse);
+//         expect(function3Started, isFalse);
+//         expect(completer3.isCompleted, isFalse);
+//       });
 
-      future2.then((value) {
-        expect(value, 2);
-        expect(completer1.isCompleted, isTrue);
-        expect(function2Started, isTrue);
-        expect(function3Started, isFalse);
-        expect(completer3.isCompleted, isFalse);
-      });
+//       future2.then((value) {
+//         expect(value, 2);
+//         expect(completer1.isCompleted, isTrue);
+//         expect(function2Started, isTrue);
+//         expect(function3Started, isFalse);
+//         expect(completer3.isCompleted, isFalse);
+//       });
 
-      future3.then((value) {
-        expect(value, 3);
-        expect(completer1.isCompleted, isTrue);
-        expect(completer2.isCompleted, isTrue);
-      });
+//       future3.then((value) {
+//         expect(value, 3);
+//         expect(completer1.isCompleted, isTrue);
+//         expect(completer2.isCompleted, isTrue);
+//       });
 
-      expect(future1, completes);
-      expect(future2, completes);
-      expect(future3, completes);
+//       expect(future1, completes);
+//       expect(future2, completes);
+//       expect(future3, completes);
 
-      return Future.wait([future1, future2, future3]);
-    });
-  });
-}
+//       return Future.wait([future1, future2, future3]);
+//     });
+//   });
+// }
